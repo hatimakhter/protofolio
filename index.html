@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mohammad Anwar Ali - Photofolio</title>
+  <style>
+    :root{
+      --accent1:#ec4899;
+      --accent2:#6366f1;
+      --glass: rgba(11,16,32,0.6);
+    }
+    *{box-sizing:border-box}
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      line-height: 1.6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      background:#070812; /* fallback */
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    /* BACKGROUND SLIDESHOW */
+    .bg-slideshow{position:fixed;inset:0;z-index:-2;overflow:hidden}
+    .bg-slideshow img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.05);transition:opacity 1s ease, transform 12s ease}
+    .bg-slideshow img.show{opacity:1;transform:scale(1)}
+    .bg-overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(7,8,18,0.5),rgba(7,8,18,0.7));z-index:-1}
+
+    header{
+      position:sticky;top:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(8px);z-index:40;display:flex;justify-content:space-between;align-items:center;padding:18px 36px
+    }
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700}
+    nav a{color:rgba(255,255,255,0.9);text-decoration:none;margin-left:18px;font-size:15px}
+
+    main{max-width:1200px;margin:40px auto;padding:0 24px}
+
+    /* HERO */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:36px;align-items:center;min-height:78vh}
+    .hero-left h1{font-size:40px;margin:0}
+    .hero-left p{color:#d0d6e0;margin-top:12px;max-width:640px}
+    .hero-cta{margin-top:20px;display:flex;gap:12px}
+    .btn{padding:12px 22px;border-radius:28px;font-weight:600;border:0;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));box-shadow:0 8px 30px rgba(99,102,241,0.12)}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);color:#e6e9f2}
+
+    /* HERO PHOTO WITH 3D TILT */
+    .portrait-wrap{width:420px;height:420px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(0,0,0,0.15));border-radius:20px;display:flex;align-items:center;justify-content:center;padding:28px;box-shadow:0 10px 40px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    .portrait{width:320px;height:320px;border-radius:50%;overflow:hidden;display:block;transform-style:preserve-3d;transition:transform 0.25s ease, box-shadow 0.25s ease}
+    .portrait img{width:100%;height:100%;object-fit:cover;display:block}
+    .portrait-glow{position:absolute;pointer-events:none;width:360px;height:360px;border-radius:50%;filter:blur(30px);mix-blend-mode:screen;opacity:0.6}
+
+    /* GALLERY */
+    .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:30px}
+    .tile{position:relative;border-radius:12px;overflow:hidden;cursor:pointer;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.15));box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    .tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+    .tile:hover img{transform:scale(1.06)}
+    .tile .meta{position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,0.45);padding:8px 10px;border-radius:8px;font-size:13px}
+
+    /* LIGHTBOX */
+    .lightbox{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);z-index:60;opacity:0;pointer-events:none;transition:opacity .25s}
+    .lightbox.show{opacity:1;pointer-events:auto}
+    .lightbox img{max-width:90%;max-height:86vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,0.7)}
+    .lightbox .close{position:absolute;top:28px;right:28px;background:rgba(255,255,255,0.06);border-radius:8px;padding:10px;cursor:pointer}
+
+    /* SOCIAL ICONS */
+    .socials{display:flex;gap:12px;margin-top:16px}
+    .socials a{display:inline-flex;padding:10px;border-radius:10px;background:rgba(255,255,255,0.03);text-decoration:none;align-items:center;gap:8px}
+
+    /* FOOTER */
+    footer{margin-top:60px;padding:36px 0;color:#bfc8dd;text-align:center}
+    footer small{color:#98a3c2}
+
+    /* Reveal Animations */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease, transform .6s ease}
+    .reveal.show{opacity:1;transform:none}
+
+    /* Responsive */
+    @media (max-width:980px){.hero{grid-template-columns:1fr;gap:22px}.portrait-wrap{width:340px;height:340px;margin:0 auto}.hero-cta{flex-wrap:wrap}}
+    @media (max-width:520px){header{padding:12px 18px}.hero-left h1{font-size:28px;padding-right:0}.portrait-wrap{width:260px;height:260px}.hero{padding:40px 18px}}
+  </style>
+</head>
+<body>
+
+  <!-- Background slideshow: put your images in the same folder and name them anwar1.jpg, anwar2.jpg, anwar3.jpg (you can add more) -->
+  <div class="bg-slideshow" aria-hidden>
+    <img src=".anwar1.jpg" alt="bg1" class="show">
+    <img src="anwar3.jpg" alt="bg2">
+    <img src="anwar2.jpg" alt="bg3">
+  </div>
+  <div class="bg-overlay"></div>
+
+  <header>
+    <div class="brand">
+      <div class="logo">MA</div>
+      <div>
+        <div style="font-weight:600">Mohammad Anwar Ali</div>
+        <div style="font-size:12px;color:var(--accent2);opacity:0.9">Content Creator</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-left">
+        <h1 class="reveal">Hi — I’m <span style="background:linear-gradient(90deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Mohammad Anwar Ali</span></h1>
+        <p class="reveal">I make cinematic short-form videos, motion visuals and photo stories that help creators & brands grow. Below are selected shots and projects — click to open fullscreen.</p>
+        <div class="hero-cta reveal">
+          <button class="btn btn-primary" onclick="document.getElementById('contact-form').scrollIntoView({behavior:'smooth'})">Hire me</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('work').scrollIntoView({behavior:'smooth'})">View work</button>
+        </div>
+        <div class="socials reveal">
+          <a href="#" aria-label="YouTube">
+            <!-- svg -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M23 7.9a3 3 0 0 0-2.12-2.12C18.8 5 12 5 12 5s-6.8 0-8.88.78A3 3 0 0 0 .99 7.9 31.1 31.1 0 0 0 0 12a31.1 31.1 0 0 0 .99 4.1 3 3 0 0 0 2.13 2.12C5.2 19 12 19 12 19s6.8 0 8.88-.78A3 3 0 0 0 23 16.1 31.1 31.1 0 0 0 24 12a31.1 31.1 0 0 0-1-4.1z" stroke="currentColor" stroke-width="0" fill="currentColor"></path><path d="M10 15V9l6 3-6 3z" fill="#fff"/></svg>
+            <span style="font-size:13px;color:#dfe7ff">YouTube</span>
+          </a>
+          <a href="#" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="0" fill="currentColor"></rect><circle cx="12" cy="12" r="3" fill="#fff"></circle></svg>
+            <span style="font-size:13px;color:#dfe7ff">Instagram</span>
+          </a>
+          <a href="#" aria-label="LinkedIn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="2" fill="currentColor"></rect><path d="M6 9h3v8H6zM7.5 6a1.5 1.5 0 11.001 0A1.5 1.5 0 017.5 6zM11 9h3v1.1c.4-.7 1.5-1.3 2.6-1.3 2.8 0 3.4 1.8 3.4 4.1V17h-3v-3.4c0-.8 0-1.8-1.1-1.8-1.1 0-1.2.9-1.2 1.8V17h-3V9z" fill="#fff"></path></svg>
+            <span style="font-size:13px;color:#dfe7ff">LinkedIn</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="portrait-wrap reveal" id="portraitWrap">
+        <div class="portrait-glow" id="glow" style="background:radial-gradient(circle at 30% 20%, rgba(236,72,153,0.25), transparent 20%), radial-gradient(circle at 70% 80%, rgba(99,102,241,0.22), transparent 25%);"></div>
+        <div class="portrait" id="portrait">
+          <!-- hero photo: put your headshot named anwar.jpg in the same folder -->
+          <img src="anwar3.jpg" alt="Mohammad Anwar">
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="work">
+      <h3 class="reveal">Selected Work — Photogallery</h3>
+      <div class="gallery" id="gallery">
+        <!-- Place your project images in the same folder and name them gallery1.jpg .. gallery9.jpg (or fewer). The code below will auto-populate if files exist. -->
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <h3 class="reveal">About</h3>
+      <p class="reveal">I’m a content creator and photographer focused on short-form storytelling and visual narratives. I combine cinematic framing with fast-paced editing, tailored for social platforms and brands.</p>
+    </section>
+
+    <!-- CONTACT -->
+    <footer id="contact">
+      <div id="contact-form">
+        <h3>Contact</h3>
+        <p>Available for freelance & brand collaborations. I usually reply within 24 hours.</p>
+        <form id="form" style="margin-top:18px;max-width:520px;margin-left:auto;margin-right:auto;display:flex;flex-direction:column;gap:12px">
+          <input name="name" placeholder="Your name" required style="padding:12px;border-radius:8px;border:0;background:rgba(255,255,255,0.03);color:white">
+          <input name="email" placeholder="Your email" type="email" required style="padding:12px;border-radius:8px;border:0;background:rgba(255,255,255,0.03);color:white">
+          <textarea name="message" placeholder="Message" rows="4" required style="padding:12px;border-radius:8px;border:0;background:rgba(255,255,255,0.03);color:white"></textarea>
+          <div style="display:flex;justify-content:center"><button class="btn btn-primary" type="submit">Send Message</button></div>
+        </form>
+      </div>
+      <small>© 2025 Mohammad Anwar Ali — Photofolio</small>
+    </footer>
+  </main>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" class="lightbox" aria-hidden>
+    <div class="close" onclick="closeLightbox()" title="Close" style="color:white">✕</div>
+    <img id="lightboxImg" src="" alt="">
+  </div>
+
+  <script>
+    // --------- Background slideshow ---------
+    (function(){
+      const imgs = document.querySelectorAll('.bg-slideshow img');
+      let idx = 0;
+      setInterval(()=>{
+        imgs[idx].classList.remove('show');
+        idx = (idx+1) % imgs.length;
+        imgs[idx].classList.add('show');
+      },4500);
+    })();
+
+    // --------- Portrait 3D tilt effect ---------
+    (function(){
+      const wrap = document.getElementById('portraitWrap');
+      const portrait = document.getElementById('portrait');
+      const glow = document.getElementById('glow');
+      wrap.addEventListener('mousemove',(e)=>{
+        const rect = wrap.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5; // -0.5..0.5
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        const rx = -y * 14; const ry = x * 14;
+        portrait.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(6px)`;
+        glow.style.transform = `translate(${x*40}px,${y*40}px)`;
+      });
+      wrap.addEventListener('mouseleave',()=>{
+        portrait.style.transform = '';
+        glow.style.transform = '';
+      });
+    })();
+
+    // --------- Gallery auto-fill (attempt to insert gallery1..9) ---------
+    (function(){
+      const gallery = document.getElementById('gallery');
+      // we'll try up to 12 images
+      for(let i=1;i<=12;i++){
+        const imgName = `gallery${i}.jpg`;
+        const tile = document.createElement('div');
+        tile.className = 'tile reveal';
+        // create image element
+        const img = document.createElement('img');
+        img.src = imgName;
+        img.alt = 'photo '+i;
+        img.loading = 'lazy';
+        img.onerror = function(){ // remove tile if file not found
+          tile.remove();
+        };
+        tile.appendChild(img);
+        const meta = document.createElement('div');
+        meta.className='meta';
+        meta.textContent = `Project ${i}`;
+        tile.appendChild(meta);
+        tile.addEventListener('click',()=>{ openLightbox(img.src) });
+        gallery.appendChild(tile);
+      }
+    })();
+
+    // --------- Lightbox ---------
+    function openLightbox(src){
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightboxImg');
+      lbImg.src = src;
+      lb.classList.add('show');
+      lb.removeAttribute('aria-hidden');
+    }
+    function closeLightbox(){
+      const lb = document.getElementById('lightbox');
+      lb.classList.remove('show');
+      lb.setAttribute('aria-hidden','true');
+    }
+    document.getElementById('lightbox').addEventListener('click',(e)=>{ if(e.target.id==='lightbox') closeLightbox(); });
+
+    // --------- Reveal on scroll ---------
+    (function(){
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('show'); });
+      },{threshold:0.12});
+      document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+      document.querySelectorAll('.tile').forEach(el=>io.observe(el));
+      document.querySelectorAll('.portrait-wrap').forEach(el=>io.observe(el));
+    })();
+
+    // --------- Contact form (simple local handler) ---------
+    document.getElementById('form').addEventListener('submit',(e)=>{
+      e.preventDefault();
+      alert('Thank you! Message sent (demo).');
+      e.target.reset();
+    });
+
+    // Accessibility: close lightbox with Esc
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeLightbox(); });
+  </script>
+</body>
+</html>
